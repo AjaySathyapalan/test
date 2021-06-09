@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#edit visudo
+echo 'pi ALL=(ALL) NOPASSWD: ALL
+openhab ALL=(ALL) NOPASSWD: ALL
+' | sudo tee --append visudo;
+
+#edit bashrc
+sudo sed -i 's/HISTCONTROL=ignoreboth/HISTCONTROL=ignoredups/' ~/.bashrc;
+
 #installing the required packages
 cd \
 && sudo apt-get install -y apt-transport-https bc dnsmasq hostapd vim python3-flask python3-requests dirmngr accountsservice build-essential python quilt devscripts python-setuptools python3 libssl-dev cmake libc-ares-dev uuid-dev daemon zip zlibc zlib1g zlib1g-dev python-smbus unclutter matchbox-window-manager xwit xinit openbox lxterminal geoclue-2.0 libjavascriptcoregtk-3.0-0=2.4.9-1~deb8u1+rpi1 libwebkitgtk-3.0-0=2.4.9-1~deb8u1+rpi1 \
