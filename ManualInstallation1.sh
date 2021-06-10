@@ -2,8 +2,7 @@
 
 #edit visudo
 echo 'pi ALL=(ALL) NOPASSWD: ALL
-openhab ALL=(ALL) NOPASSWD: ALL
-' | sudo tee --append visudo;
+openhab ALL=(ALL) NOPASSWD: ALL' | sudo tee --append /etc/sudoers;
 
 #edit bashrc
 sudo sed -i 's/HISTCONTROL=ignoreboth/HISTCONTROL=ignoredups/' ~/.bashrc;
