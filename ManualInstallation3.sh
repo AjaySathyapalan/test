@@ -69,7 +69,7 @@ sed -i 's/type="email"/type="hidden"/g' /home/pi/scripts/raspberry-pi-turnkey/te
 #sed -i 's/checkwpa = True/checkwpa = True\n    valid_psk = True\n    checkwpa = False/g' raspberry-pi-turnkey/startup.py;
 sed '/while checkwpa:/,/^\s*$/d' /home/pi/scripts/raspberry-pi-turnkey/startup.py | sudo tee /home/pi/scripts/raspberry-pi-turnkey/startup.py;
 sudo cp ~/manual/test/replace.txt /home/pi/scripts/raspberry-pi-turnkey/ ;
-sed -i '/checkwpa = True/r replace.txt' /home/pi/scripts/raspberry-pi-turnkey/startup.py;
+sudo sed -i '/checkwpa = True/r replace.txt' /home/pi/scripts/raspberry-pi-turnkey/startup.py;
 sudo rm /home/pi/scripts/raspberry-pi-turnkey/replace.txt;
 
 #Setting up Autostart file
