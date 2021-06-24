@@ -88,5 +88,7 @@ cd \
 su -l pi -c 'sudo xinit  /home/pi/scripts/kiosk-xinit.sh'
 exit 0" | sudo tee --append /etc/rc.local;
 
+sudo sed '/network={/,/^\s*$/d' /etc/wpa_supplicant/wpa_supplicant.conf | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf;
+
 #reboot
 sudo reboot;
