@@ -22,6 +22,15 @@ wget https://dl.google.com/go/go1.10.linux-armv6l.tar.gz \
 && echo 'export GOPATH=$HOME/go' >>  ~/.profile \
 && source ~/.profile;
 
+#install KWEB
+cd ~ \
+&& wget http://steinerdatenbank.de/software/kweb-1.7.9.8.tar.gz \
+&& tar -xzf kweb-1.7.9.8.tar.gz \
+&& cd kweb-1.7.9.8 \
+&& ./debinstall \
+&& cd ~ \
+&& rm -rf kweb-1.7.9.8 kweb-1.7.9.8.tar.gz;
+
 #Install raspberry-pi-turnkey.git files
 cd /home/pi/scripts \
 && git clone https://github.com/schollz/raspberry-pi-turnkey.git \
@@ -78,15 +87,6 @@ cd \
 && echo "su pi -c '/usr/bin/sudo /usr/bin/python3 /home/pi/scripts/raspberry-pi-turnkey/startup.py &'
 su -l pi -c 'sudo xinit  /home/pi/scripts/kiosk-xinit.sh'
 exit 0" | sudo tee --append /etc/rc.local;
-
-#install KWEB
-cd ~ \
-&& wget http://steinerdatenbank.de/software/kweb-1.7.9.8.tar.gz \
-&& tar -xzf kweb-1.7.9.8.tar.gz \
-&& cd kweb-1.7.9.8 \
-&& ./debinstall \
-&& cd ~ \
-&& rm -rf kweb-1.7.9.8 kweb-1.7.9.8.tar.gz;
 
 #reboot
 sudo reboot;
