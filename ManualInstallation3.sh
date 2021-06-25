@@ -88,16 +88,15 @@ sudo cp ~/manual/test/replace.txt /home/pi/scripts/raspberry-pi-turnkey/ ;
 sudo sed -i '/checkwpa = True/r replace.txt' /home/pi/scripts/raspberry-pi-turnkey/startup.py;
 sudo rm /home/pi/scripts/raspberry-pi-turnkey/replace.txt;
 
+#Remove if any saved Wi-Fi network configuration
+sudo sed '/network={/,/^\s*$/d' /etc/wpa_supplicant/wpa_supplicant.conf | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf;
+
 #Setting up Autostart file
 cd \
 && sudo sed -i 's/exit 0//g' /etc/rc.local \
 && echo "su pi -c '/usr/bin/sudo /usr/bin/python3 /home/pi/scripts/raspberry-pi-turnkey/startup.py &'
 su -l pi -c 'sudo xinit  /home/pi/scripts/kiosk-xinit.sh'
-
 exit 0" | sudo tee --append /etc/rc.local;
-
-#Remove if any saved Wi-Fi network configuration
-sudo sed '/network={/,/^\s*$/d' /etc/wpa_supplicant/wpa_supplicant.conf | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf;
 
 #reboot
 sudo reboot;
