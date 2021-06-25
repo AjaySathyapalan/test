@@ -91,9 +91,5 @@ exit 0" | sudo tee --append /etc/rc.local;
 
 sudo sed '/network={/,/^\s*$/d' /etc/wpa_supplicant/wpa_supplicant.conf | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf;
 
-#Remove manual installtion files
-cd \
-&& sudo rm -rf /home/pi/manual;
-
 #reboot
 sudo reboot;
