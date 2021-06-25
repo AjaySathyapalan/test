@@ -72,7 +72,7 @@ sudo systemctl enable hostapd \
 && sudo systemctl start hostapd && sudo systemctl start dnsmasq;
 
 #Change email type = "hidden"
-sed -i 's/type="email"/type="hidden"/g' /home/pi/scripts/raspberry-pi-turnkey/templates/index.html;
+sudo sed -i 's/type="email"/type="hidden"/g' /home/pi/scripts/raspberry-pi-turnkey/templates/index.html;
 
 #Hide a Jessie bug of turnkey
 #sed -i 's/checkwpa = True/checkwpa = True\n    valid_psk = True\n    checkwpa = False/g' raspberry-pi-turnkey/startup.py;
@@ -86,9 +86,14 @@ cd \
 && sudo sed -i 's/exit 0//g' /etc/rc.local \
 && echo "su pi -c '/usr/bin/sudo /usr/bin/python3 /home/pi/scripts/raspberry-pi-turnkey/startup.py &'
 su -l pi -c 'sudo xinit  /home/pi/scripts/kiosk-xinit.sh'
+
 exit 0" | sudo tee --append /etc/rc.local;
 
 sudo sed '/network={/,/^\s*$/d' /etc/wpa_supplicant/wpa_supplicant.conf | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf;
+
+#Remove manual installtion files
+cd \
+&& sudo rm -rf /home/pi/manual;
 
 #reboot
 sudo reboot;
