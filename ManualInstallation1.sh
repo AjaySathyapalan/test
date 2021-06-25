@@ -5,7 +5,7 @@ echo 'pi ALL=(ALL) NOPASSWD: ALL
 openhab ALL=(ALL) NOPASSWD: ALL' | sudo tee --append /etc/sudoers;
 
 #edit bashrc
-sudo sed -i 's/HISTCONTROL=ignoreboth/HISTCONTROL=ignoredups/' ~/.bashrc;
+sudo sed -i 's/HISTCONTROL=ignoreboth/HISTCONTROL=ignoredups/' ~/.bashrc;   #This command is used to prevent the storage of repetitive commands that we use frequently and consecutively. ie, it will store one command at once instead of multiple times when we use it consecutively
 
 #installing the required packages
 cd \
@@ -16,9 +16,9 @@ sudo apt-get install -y --no-install-recommends xserver-xorg;
 touch /home/pi/.xinitrc \
 && chmod 755 /home/pi/.xinitrc \
 && echo '#!/bin/sh
-exec openbox-session' | tee --append /home/pi/.xinitrc;
+exec openbox-session' | tee --append /home/pi/.xinitrc;   #xinitrc file is a shell script read by xinit and startx. It is mainly used to execute desktop environments, window managers, and other programs when starting the X server
 
-#confirm this is selscted
+#confirm this is selected
 echo -ne '\n' | sudo update-alternatives --config x-window-manager;
 # * 0 /usr/bin/openbox 90 auto mode
 sudo update-alternatives --config x-session-manager;
@@ -59,11 +59,12 @@ listener 9001
 protocol websockets
 pid_file /var/run/mosquitto.pid' | sudo tee --append /etc/mosquitto/mosquitto.conf;
 
+#Mosquitto broker does not use the modern system for the startup. To move the old init system, follow the procedure below :
 sudo systemctl stop mosquitto;
 sudo update-rc.d mosquitto remove;
 sudo rm /etc/init.d/mosquitto;
 
-#Input some commands
+#Input the following content into mosquitto.service
 echo '[Unit]
 Description=MQTT v3.1 message broker
 After=network.target
@@ -77,9 +78,10 @@ Restart=always
 [Install]
 WantedBy=multi-user.target' | sudo tee --append /etc/systemd/system/mosquitto.service;
 
-sudo systemctl daemon-reload;
-sudo systemctl enable mosquitto;
-sudo systemctl start mosquitto.service;
+sudo systemctl daemon-reload;   #Reload system configuration
+sudo systemctl enable mosquitto;    #Enable Mosquitto service to start at boot
+sudo systemctl start mosquitto.service;   #Starting Mosquitto service
+#Remove libwebsockets, mosquitto downloaded and build files
 sudo rm -rf /home/mosquitto /home/pi/.cmake /home/pi/libwebsockets-2.4.1 /home/pi/mosquitto-1.4.9 /home/pi/mosquitto-1.4.9.tar.gz /home/pi/v2.4.1.zip;
 
 #Install Zulu embedded
@@ -98,7 +100,8 @@ sudo update-alternatives --config javac;
 #install openhab2
 wget -qO - 'https://openhab.jfrog.io/artifactory/api/gpg/key/public' | sudo apt-key add -
 sudo apt-get install apt-transport-https;
-echo 'deb https://openhab.jfrog.io/artifactory/openhab-linuxpkg stable main' | sudo tee /etc/apt/sources.list.d/openhab.list;
+echo 'deb https://openhab.jfrog.io/artifactory/openhab-linuxpkg stable main' | sudo tee /etc/apt/sources.list.d/openhab.list;   #Add the openHAB stable repository to your systems apt sources list.
+#Check for update and install openHAB and addons package
 sudo apt-get update \
 && sudo apt-get install openhab2 \
 && sudo apt-get install openhab2-addons;

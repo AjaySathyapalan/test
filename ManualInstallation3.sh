@@ -32,10 +32,14 @@ cd ~ \
 && rm -rf kweb-1.7.9.8 kweb-1.7.9.8.tar.gz;
 
 #Install raspberry-pi-turnkey.git files
-cd /home/pi/scripts \
-&& git clone https://github.com/schollz/raspberry-pi-turnkey.git \
-&& sudo systemctl stop dnsmasq && sudo systemctl stop hostapd \
-&& echo 'interface wlan0
+cd /home/pi/scripts;
+git clone https://github.com/schollz/raspberry-pi-turnkey.git;
+
+#Stop the dnsmasq and hostapd
+sudo systemctl stop dnsmasq && sudo systemctl stop hostapd;
+
+#Input static IP commands to dhcpcd.conf
+echo 'interface wlan0
 static ip_address=192.168.4.1/24' | sudo tee --append /etc/dhcpcd.conf;
 
 #Rename dnsmasq.conf to dnsmasq.conf.orig
@@ -43,10 +47,14 @@ sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig;
 
 #Restart dhcpcd
 sudo systemctl daemon-reload \
-&& sudo systemctl restart dhcpcd \
-&& echo 'interface=wlan0
-dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h' | sudo tee --append /etc/dnsmasq.conf \
-&& echo 'interface=wlan0
+&& sudo systemctl restart dhcpcd;
+
+#Input dhcp range into the file dnsmasq.conf
+echo 'interface=wlan0
+dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h' | sudo tee --append /etc/dnsmasq.conf;
+
+#Configure hostapd.conf
+echo 'interface=wlan0
 driver=nl80211
 ssid=HESTIAPI
 hw_mode=g
@@ -75,7 +83,6 @@ sudo systemctl enable hostapd \
 sudo sed -i 's/type="email"/type="hidden"/g' /home/pi/scripts/raspberry-pi-turnkey/templates/index.html;
 
 #Hide a Jessie bug of turnkey
-#sed -i 's/checkwpa = True/checkwpa = True\n    valid_psk = True\n    checkwpa = False/g' raspberry-pi-turnkey/startup.py;
 sed '/while checkwpa:/,/^\s*$/d' /home/pi/scripts/raspberry-pi-turnkey/startup.py | sudo tee /home/pi/scripts/raspberry-pi-turnkey/startup.py;
 sudo cp ~/manual/test/replace.txt /home/pi/scripts/raspberry-pi-turnkey/ ;
 sudo sed -i '/checkwpa = True/r replace.txt' /home/pi/scripts/raspberry-pi-turnkey/startup.py;
@@ -89,6 +96,7 @@ su -l pi -c 'sudo xinit  /home/pi/scripts/kiosk-xinit.sh'
 
 exit 0" | sudo tee --append /etc/rc.local;
 
+#Remove if any saved Wi-Fi network configuration
 sudo sed '/network={/,/^\s*$/d' /etc/wpa_supplicant/wpa_supplicant.conf | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf;
 
 #reboot
