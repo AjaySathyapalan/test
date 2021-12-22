@@ -9,8 +9,8 @@ sudo sed -i 's/HISTCONTROL=ignoreboth/HISTCONTROL=ignoredups/' ~/.bashrc;   #Thi
 
 #installing the required packages
 cd \
-sudo apt-get install -y apt-transport-https bc dnsmasq hostapd vim python3-flask python3-requests dirmngr accountsservice build-essential python quilt devscripts python-setuptools python3 libssl-dev cmake libc-ares-dev uuid-dev daemon zip zlibc zlib1g zlib1g-dev python-smbus unclutter matchbox-window-manager xwit xinit openbox lxterminal geoclue-2.0 libjavascriptcoregtk-3.0-0=2.4.9-1~deb8u1+rpi1 libwebkitgtk-3.0-0=2.4.9-1~deb8u1+rpi1;
-sudo apt-get install -y --no-install-recommends xserver-xorg;
+&& sudo apt-get install -y apt-transport-https bc dnsmasq hostapd vim python3-flask python3-requests dirmngr accountsservice build-essential python quilt devscripts python-setuptools python3 libssl-dev cmake libc-ares-dev uuid-dev daemon zip zlibc zlib1g zlib1g-dev python3-smbus unclutter matchbox-window-manager xwit xinit openbox lxterminal geoclue-2.0 \
+&& sudo apt-get install -y --no-install-recommends xserver-xorg;
 
 #Create a file .xinitrc
 touch /home/pi/.xinitrc \
@@ -25,7 +25,7 @@ sudo update-alternatives --config x-session-manager;
 #Confirm there is only one alternative.
 
 #Make WiFi reconnect on drop
-sudo cp /etc/wpa_supplicant/ifupdown.sh /etc/ifplugd/action.d/ifupdown
+sudo cp /etc/wpa_supplicant/ifupdown.sh /etc/ifplugd/action.d/ifupdown;
 
 #remove Mosquitto if any
 sudo apt-get remove mosquitto -y;
@@ -41,51 +41,15 @@ cd \
 && sudo make install \
 && sudo ldconfig;
 
-#Install mosquitto with version 1.4.9
-
+#Install mosquitto
 cd \
-&& wget http://mosquitto.org/files/source/mosquitto-1.4.9.tar.gz \
-&& tar zxvf mosquitto-1.4.9.tar.gz \
-&& cd mosquitto-1.4.9 \
-&& sed -i -e "s/WITH_WEBSOCKETS:=no/WITH_WEBSOCKETS:=yes/g" config.mk \
-&& make \
-&& sudo make install \
-&& sudo cp mosquitto.conf /etc/mosquitto;
-
-#Input some command lines such as user, port, etc. to mosquitto.conf
-echo 'user pi
-port 1883
-listener 9001
-protocol websockets
-pid_file /var/run/mosquitto.pid' | sudo tee --append /etc/mosquitto/mosquitto.conf;
-
-#Mosquitto broker does not use the modern system for the startup. To move the old init system, follow the procedure below :
-sudo systemctl stop mosquitto;
-sudo update-rc.d mosquitto remove;
-sudo rm /etc/init.d/mosquitto;
-
-#Input the following content into mosquitto.service
-echo '[Unit]
-Description=MQTT v3.1 message broker
-After=network.target
-Requires=network.target
-
-[Service]
-Type=simple
-ExecStart=/usr/local/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf
-Restart=always
-
-[Install]
-WantedBy=multi-user.target' | sudo tee --append /etc/systemd/system/mosquitto.service;
-
-sudo systemctl daemon-reload;   #Reload system configuration
-sudo systemctl enable mosquitto;    #Enable Mosquitto service to start at boot
-sudo systemctl start mosquitto.service;   #Starting Mosquitto service
-#Remove libwebsockets, mosquitto downloaded and build files
-sudo rm -rf /home/mosquitto /home/pi/.cmake /home/pi/libwebsockets-2.4.1 /home/pi/mosquitto-1.4.9 /home/pi/mosquitto-1.4.9.tar.gz /home/pi/v2.4.1.zip;
+&& sudo apt-get install -y mosquitto;
+#Remove libwebsockets downloaded and build files
+sudo rm -rf /home/pi/libwebsockets-2.4.1 /home/pi/v2.4.1.zip;
 
 #Install Zulu embedded
-sudo mkdir /opt/jdk/ \
+cd \
+&& sudo mkdir /opt/jdk/ \
 && cd /opt/jdk \
 && sudo wget https://cdn.azul.com/zulu-embedded/bin/zulu8.40.0.178-ca-jdk1.8.0_222-linux_aarch32hf.tar.gz \
 && sudo tar -xzvf zulu8.40.0.178-ca-jdk1.8.0_222-linux_aarch32hf.tar.gz \
@@ -98,7 +62,7 @@ sudo update-alternatives --config java;
 sudo update-alternatives --config javac;
 
 #install openhab2
-wget -qO - 'https://openhab.jfrog.io/artifactory/api/gpg/key/public' | sudo apt-key add -
+wget -qO - 'https://openhab.jfrog.io/artifactory/api/gpg/key/public' | sudo apt-key add -;
 sudo apt-get install apt-transport-https;
 echo 'deb https://openhab.jfrog.io/artifactory/openhab-linuxpkg stable main' | sudo tee /etc/apt/sources.list.d/openhab.list;   #Add the openHAB stable repository to your systems apt sources list.
 #Check for update and install openHAB and addons package

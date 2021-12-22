@@ -22,14 +22,8 @@ wget https://dl.google.com/go/go1.10.linux-armv6l.tar.gz \
 && echo 'export GOPATH=$HOME/go' >>  ~/.profile \
 && source ~/.profile;
 
-#install KWEB
-cd ~ \
-&& wget http://steinerdatenbank.de/software/kweb-1.7.9.8.tar.gz \
-&& tar -xzf kweb-1.7.9.8.tar.gz \
-&& cd kweb-1.7.9.8 \
-&& ./debinstall \
-&& cd ~ \
-&& rm -rf kweb-1.7.9.8 kweb-1.7.9.8.tar.gz;
+#chromium web installation
+sudo apt-get install -y chromium-browser;
 
 #Install raspberry-pi-turnkey.git files
 cd /home/pi/scripts;
@@ -79,6 +73,21 @@ sudo systemctl unmask hostapd;
 sudo systemctl enable hostapd \
 && sudo systemctl start hostapd && sudo systemctl start dnsmasq;
 
+#Change Kweb to chromium-browser
+Search1="kweb -KJ /home/pi/scripts/openhabloader.html &";
+Replace1="/usr/bin/chromium-browser --noerordialogs --disable-session-crashed-bubble --disable-infobars --no-sandbox --kiosk /home/pi/scripts/openhabloader.html &"
+echo $Search1;
+echo $Replace1;
+sed -i "s|$Search1|$Replace1|g" /home/pi/scripts/kiosk-xinit.sh;
+
+Search2="kweb -KJ /home/pi/scripts/oneui/index.html";
+Replace2="/usr/bin/chromium-browser --noerordialogs --disable-session-crashed-bubble --disable-infobars --no-sandbox --kiosk /home/pi/scripts/oneui/index.html";
+echo $Search2;
+echo $Replace2;
+sed -i "s|$Search2|$Replace2|g" /home/pi/scripts/kiosk-xinit.sh;
+sed -i 's/kweb/chromium-browser/g' /home/pi/scripts/kiosk-xinit.sh;
+#sed 's/^\( *\)sleep.*/\1sleeep/' /home/pi/scripts/kiosk-xinit.sh;
+
 #Change email type = "hidden"
 sudo sed -i 's/type="email"/type="hidden"/g' /home/pi/scripts/raspberry-pi-turnkey/templates/index.html;
 
@@ -89,14 +98,21 @@ sudo sed -i '/checkwpa = True/r replace.txt' /home/pi/scripts/raspberry-pi-turnk
 sudo rm /home/pi/scripts/raspberry-pi-turnkey/replace.txt;
 
 #Remove if any saved Wi-Fi network configuration
-sudo sed '/network={/,/^\s*$/d' /etc/wpa_supplicant/wpa_supplicant.conf | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf;
+#sudo sed '/network={/,/^\s*$/d' /etc/wpa_supplicant/wpa_supplicant.conf | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf;
 
 #Setting up Autostart file
 cd \
 && sudo sed -i 's/exit 0//g' /etc/rc.local \
 && echo "su pi -c '/usr/bin/sudo /usr/bin/python3 /home/pi/scripts/raspberry-pi-turnkey/startup.py &'
-su -l pi -c 'sudo xinit  /home/pi/scripts/kiosk-xinit.sh'
+su -l pi -c 'sudo xinit /home/pi/scripts/kiosk-xinit.sh'
 exit 0" | sudo tee --append /etc/rc.local;
 
 #reboot
 sudo reboot;
+
+
+
+#ip addr show wlan0 | grep 'inet ' | head -1 | awk '{print $2}' | cut -d/ -f1;
+#ip addr show eth0 | grep 'inet ' | head -1 | awk '{print $2}' | cut -d/ -f1;
+#/sbin/ifconfig eth0 | grep inet  | wc -l
+#ifconfig eth0 | grep inet | head -1 | awk '{print $2}'
